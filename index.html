@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<table class="calendar">
+		<thead>Календарь отпусков</thead>
+		<tbody>
+			<tr>
+				<td>фамилия имя сотрудника</td>
+				<td>должность</td>
+				<td>дата начала отпуска</td>
+				<td>дата окончания отпуска</td>
+			</tr>
+		</tbody>
+	</table>
+	<button class="date-sort">Сортировка по началу отпуска</button>
+	<button class="name-sort">Сортировка по фамилиям</button>
+	<button class="edit-vacation">Редактировать отпуск</button>
+	<button class="delete-vacation">Удалить отпуск</button>
+	<form class="vacation-form">
+		<div>
+			<label for="name">введите фамилию имя сотрудника (на английском)</label><br>
+			<input id="name" type="text"></input>
+		</div>
+		<div>
+			<label for="start-vacation">введите начало отпуска (в формате dd.mm)</label><br>
+			<input id="start-vacation" type="text"></input>
+		</div>
+		<div> 
+			<label for="end-vacation">введите окончание отпуска (в формате dd.mm)</label><br>
+			<input id="end-vacation" type="text"></input>
+		</div>
+		<input type="submit" value="Отправить"/>
+	</form>
+	<form class="delete-form">
+		<div>
+			<label for="name">введите фамилию имя сотрудника (на английском)</label><br>
+			<input id="name" type="text"></input>
+		</div>
+		<input type="submit" value="Отправить"/>
+	</form>
+
+	<script type="text/javascript" src="js/jquery-3.1.1.min.js"></script>
+	<script type="text/javascript" src="js/jquery-migrate-1.4.1.min.js"></script>
+	<script type="text/javascript" src="js/script.js"></script>
+</body>
+</html>

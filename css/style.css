@@ -1,0 +1,19 @@
+td {
+  padding: 10px;
+  border:1px solid black;
+}
+.yellow {
+  background: #FFDD00;
+}
+.green {
+  background: #00FFA9;
+}
+.blue {
+  background: #3AE2CE;
+}
+.vacation-form {
+  display: none;
+}
+.delete-form {
+  display: none;
+}
