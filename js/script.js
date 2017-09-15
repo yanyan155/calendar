@@ -80,9 +80,6 @@ if( !(localStorage.getItem("key"))) {
     var strWorkers = JSON.stringify(storage);
     localStorage.setItem("key", strWorkers);
 }
-/*var strWorkers = JSON.stringify(storage);
-localStorage.setItem("key", strWorkers);*/
-/*localStorage.clear();*/
 var Workers = JSON.parse(localStorage.getItem("key"));
 var currentDate = new Date();
 
@@ -90,7 +87,7 @@ for (var i = 0; i<Workers.length; i++) {
     var start = toDate( ('' + Workers[i].startVacation));
     var end = toDate(('' + Workers[i].EndVacation));
     var days = (end - start)/1000/3600/24;
-
+    var ChangeCount = 0;
     if (((currentDate - start) > 0) && ((end - currentDate)>0) && (Workers[i].addDays == "none")) {
         Workers[i].addDays = "not";
     }
@@ -98,20 +95,16 @@ for (var i = 0; i<Workers.length; i++) {
 
         Workers[i].summVacationDays += days;
         Workers[i].addDays = "yes";
-
-        console.log(Workers[i].summVacationDays);
-        
-        var NewStorage = Workers;
-        localStorage.clear();
-        var strWorkers = JSON.stringify(NewStorage);
-        localStorage.setItem("key", strWorkers);
-
+        ChangeCount++;
+    }
+    if (ChangeCount > 0) {
+        ChangeCount = 0;
+        ChangeStorage();
         window.location.reload();
     }
     if (currentDate > end) {
         Workers[i].addDays = "none";
     }
-    /* обновляем!! */
 }
 
 function toDate(date) {
@@ -207,11 +200,14 @@ function addHTML() {
 function reload(time) {
     setTimeout(function() {
 
-        var NewStorage = Workers;
-            localStorage.clear();
-            var strWorkers = JSON.stringify(NewStorage);
-            localStorage.setItem("key", strWorkers);
+        ChangeStorage();
         window.location.reload();}, time);
+}
+function ChangeStorage() {
+    var NewStorage = Workers;
+    localStorage.clear();
+    var strWorkers = JSON.stringify(NewStorage);
+    localStorage.setItem("key", strWorkers);
 }
 function checkName(name) {
     var nameSplit = name.split(' ');
@@ -282,15 +278,13 @@ $("body").on("submit",".delete-form", function() {
             Workers[number].startVacation = '';
             Workers[number].EndVacation = '';
 
-            var NewStorage = Workers;
-            localStorage.clear();
-            var strWorkers = JSON.stringify(NewStorage);
-            localStorage.setItem("key", strWorkers);
+            ChangeStorage();
             window.location.reload();
         } else {
             alert("можно удалить только будущий отпуск");
         }
     }
+    return false;
 });
 
 $("body").on("submit",".vacation-form", function() {
@@ -299,7 +293,6 @@ $("body").on("submit",".vacation-form", function() {
     var name = (thisForm).children().children('#name').val();
     var startVacation = (thisForm).children().children('#start-vacation').val();
     var endVacation = (thisForm).children().children('#end-vacation').val();
-
     var nameJoin = checkName(name);
 
     startVacation = encodeURIComponent(startVacation);
@@ -315,7 +308,6 @@ $("body").on("submit",".vacation-form", function() {
                 number = i;
             }
         }
-        /* если currentdata фигурирует - обязательно обновляем*/
         var startStorageDay;
         var endStorageDay;
         if(worker.startVacation) {
@@ -372,7 +364,6 @@ $("body").on("submit",".vacation-form", function() {
 
                         if ( ((startFormDay >= newStartDay) && (startFormDay < newEndDay)) || 
                             ((endFormDay > newStartDay) && (endFormDay < newEndDay)) ) { 
-                            console.log(Workers[i]);
                             SameVacation++;
                         }
                     }
@@ -386,7 +377,6 @@ $("body").on("submit",".vacation-form", function() {
                 return true;
             }
         }
-        console.log(worker.summVacationDays);
         var success1 = rewriteStorage1();
         var success2 = rewriteStorage2();
 
@@ -395,17 +385,11 @@ $("body").on("submit",".vacation-form", function() {
             Workers[number].startVacation = startVacation;
             Workers[number].EndVacation = endVacation;
 
-            var NewStorage = Workers;
-            localStorage.clear();
-            var strWorkers = JSON.stringify(NewStorage);
-            localStorage.setItem("key", strWorkers);
-
+            ChangeStorage();
             window.location.reload();
-            
         }      
     } else {
         alert("нет данного сотрудника, повторите попытку");
     }
-
     return false;
 });
