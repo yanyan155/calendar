@@ -254,10 +254,12 @@ $(".name-sort").on("click", function(){
 
 $(".edit-vacation").on("click", function(){
     $(".vacation-form" ).toggle();
+    $(".delete-form").hide();
 });
 
 $(".delete-vacation").on("click", function(){
     $(".delete-form").toggle();
+    $(".vacation-form").hide();
 });
 
 $("body").on("submit",".delete-form", function() {
