@@ -108,32 +108,32 @@ var ChangeCount = 0;
 for (var i = 0; i<Workers.length; i++) {
 
     var worker = Workers[i];
-    var start = toDate(('' + Workers[i].startVacation));
-    var end = toDate(('' + Workers[i].endVacation));
+    var start = toDate(('' + worker.startVacation));
+    var end = toDate(('' + worker.endVacation));
     var days = (end - start)/1000/3600/24 + 1;
-    if (!Workers[i].lastVacation[0] && (Workers[i].endVacation != "") && currentDate > end) {
-        Workers[i].lastVacation = [ Workers[i].startVacation , Workers[i].endVacation];
+    if (!worker.lastVacation[0] && (worker.endVacation != "") && currentDate > end) {
+        worker.lastVacation = [ worker.startVacation , worker.endVacation];
         ChangeCount++;
     }
-    if (Workers[i].addDays === "firstSumm" && (Workers[i].summVacationDays === 0) && (Workers[i].endVacation != "")) {
-        Workers[i].summVacationDays += days; 
+    if (worker.addDays === "firstSumm" && (worker.summVacationDays === 0) && (worker.endVacation != "")) {
+        worker.summVacationDays += days; 
         ChangeCount++;
     }
     
-    if (Workers[i].summVacationDays > 24) { /* проверить summvacationDAys, НЕ ЗАБЫТЬ УБРАТЬ */
+    if (worker.summVacationDays > 24) { /* проверить summvacationDAys, НЕ ЗАБЫТЬ УБРАТЬ */
         alert("ЗАМЕС!");
     }
-    if (((currentDate - start) > 0) && ((end - currentDate)>0) && (Workers[i].addDays == "none")) {
-        Workers[i].addDays = "not";
+    if (((currentDate - start) > 0) && ((end - currentDate)>0) && (worker.addDays == "none")) {
+        worker.addDays = "not";
     }
-    if (((currentDate - start) > 0) && ((end - currentDate)>0) && (Workers[i].addDays == "not")) {
+    if (((currentDate - start) > 0) && ((end - currentDate)>0) && (worker.addDays == "not")) {
 
-        Workers[i].summVacationDays += days;
-        Workers[i].addDays = "yes"; 
+        worker.summVacationDays += days;
+        worker.addDays = "yes"; 
         ChangeCount++;
     }
     if (currentDate > end) {
-        Workers[i].addDays = "none";
+        worker.addDays = "none";
     }
 }
 if (ChangeCount > 0) {
@@ -263,7 +263,7 @@ function findWorker(string) {
 }
 
 $(document).ready(function () {
-    console.log(Workers);
+    /*console.log(Workers);*/
     Workers = dateSort(Workers);
     addHTML();
     reload(1000*3600*12);
@@ -390,9 +390,6 @@ $("body").on("submit",".vacation-form", function() {
                             ((endFormDay >= newStartDay) && (endFormDay <= newEndDay)) ||
                             ((startFormDay <= newStartDay) && (endFormDay >= newEndDay))) { 
                             SameVacation++;
-                            endFormDay
-                            console.log(i);
-                            console.log(Workers[i]);
                         }
                     }
                 }
@@ -407,7 +404,7 @@ $("body").on("submit",".vacation-form", function() {
         }
         var success1 = rewriteStorage1();
         var success2 = rewriteStorage2();
-        console.log([success1, success2]);
+        /*console.log([success1, success2]);*/
         if (success1 && success2) {
 
             worker.startVacation = startVacation;
