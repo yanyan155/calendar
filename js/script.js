@@ -4,75 +4,93 @@ var storage = [
         fullName: "Sidorov Vlad",
         Qualification: "front-end developer",
         startVacation: "",
-        EndVacation:"",
+        endVacation:"",
         summVacationDays:0,
-        addDays: "none"
+        addDays: "none",
+        lastVacation: []
     },
     {
         id: 2,
         fullName: "Kozlov Vlad",
         Qualification: "designer",
         startVacation: "25.06",
-        EndVacation:"6.07",
+        endVacation:"6.07",
         summVacationDays:0,
-        addDays: "none"
+        addDays: "none",
+        lastVacation: []
     },
     {
         id: 3,
         fullName: "Ivanov Ivan",
         Qualification: "front-end developer",
         startVacation:"25.06",
-        EndVacation:"3.07",
+        endVacation:"3.07",
         summVacationDays:0,
-        addDays: "none"
+        addDays: "none",
+        lastVacation: []
     },
     {
         id: 4,
         fullName: "Petrov Ivan",
         Qualification: "front-end developer",
         startVacation:"25.03",
-        EndVacation:"5.04",
+        endVacation:"5.04",
         summVacationDays:0,
-        addDays: "none"
+        addDays: "none",
+        lastVacation: []
     },
     {
         id: 5,
         fullName: "Kositsin Ivan",
         Qualification: "back-end developer",
         startVacation:"4.11",
-        EndVacation:"16.11",
+        endVacation:"16.11",
         summVacationDays:0,
-        addDays: "none"
+        addDays: "none",
+        lastVacation: []
     },
     {
         id: 6,
         fullName: "Moikin Ivan",
         Qualification: "back-end developer",
         startVacation: "12.09",
-        EndVacation:"23.09",
+        endVacation:"23.09",
         summVacationDays:0,
-        addDays: "none"
+        addDays: "none",
+        lastVacation: []
     },
     {
         id: 7,
         fullName: "Moikin Dmitry",
         Qualification: "designer",
         startVacation: "25.02",
-        EndVacation:"6.03",
+        endVacation:"6.03",
         summVacationDays:0,
-        addDays: "none"
+        addDays: "none",
+        lastVacation: []
     },
     {
         id: 8,
         fullName: "Moikina Irina",
         Qualification: "designer",
         startVacation:"18.06",
-        EndVacation:"22.06",
+        endVacation:"22.06",
         summVacationDays:0,
-        addDays: "none" 
+        addDays: "none",
+        lastVacation: []
         /* none, если отпуск не начался
         not, если отпуск начался и но дни не добавились 
         yes, если отпуск начался и дни отпусков сложились*/
+    },
+    {
+        id: 9,
+        fullName: "Okala-Kulak Vladimir",
+        Qualification: "back-end developer",
+        startVacation:"22.12",
+        endVacation:"26.12",
+        summVacationDays:0,
+        addDays: "none",
+        lastVacation: [] 
     }
 ];
 
@@ -80,31 +98,41 @@ if( !(localStorage.getItem("key"))) {
     var strWorkers = JSON.stringify(storage);
     localStorage.setItem("key", strWorkers);
 }
+//localStorage.clear();
 var Workers = JSON.parse(localStorage.getItem("key"));
 var currentDate = new Date();
 
+var ChangeCount = 0;
+
 for (var i = 0; i<Workers.length; i++) {
-    var start = toDate( ('' + Workers[i].startVacation));
-    var end = toDate(('' + Workers[i].EndVacation));
+    var start = toDate(('' + Workers[i].startVacation));
+    var end = toDate(('' + Workers[i].endVacation));
     var days = (end - start)/1000/3600/24;
-    var ChangeCount = 0;
+    if (!Workers[i].lastVacation[0] && (Workers[i].endVacation != "") && currentDate > end) {
+        Workers[i].lastVacation = [ Workers[i].startVacation , Workers[i].endVacation];
+        ChangeCount++;
+    }
+    
+    if (Workers[i].summVacationDays > 24) { /* проверить summvacationDAys, НЕ ЗАБЫТЬ УБРАТЬ */
+        alert("ЗАМЕС!");
+    }
     if (((currentDate - start) > 0) && ((end - currentDate)>0) && (Workers[i].addDays == "none")) {
         Workers[i].addDays = "not";
     }
     if (((currentDate - start) > 0) && ((end - currentDate)>0) && (Workers[i].addDays == "not")) {
 
         Workers[i].summVacationDays += days;
-        Workers[i].addDays = "yes";
+        Workers[i].addDays = "yes"; 
         ChangeCount++;
-    }
-    if (ChangeCount > 0) {
-        ChangeCount = 0;
-        ChangeStorage();
-        window.location.reload();
     }
     if (currentDate > end) {
         Workers[i].addDays = "none";
     }
+}
+if (ChangeCount > 0) {
+    ChangeCount = 0;
+    ChangeStorage();
+    window.location.reload();
 }
 
 function toDate(date) {
@@ -116,10 +144,10 @@ function toDate(date) {
     return resDate;
 }
 
-function ColorClass(date, startVacation, EndVacation) {
+function ColorClass(date, startVacation, endVacation) {
 
     var start = toDate(startVacation);
-    var end = toDate(EndVacation);
+    var end = toDate(endVacation);
     
     if(date - end > 0) {
         return 'yellow';
@@ -133,15 +161,18 @@ function ColorClass(date, startVacation, EndVacation) {
 
 function nameSort(array) {
     array.sort(function(a,b){
-        if (a.fullName > b.fullName) {
-            return 1;
-        }
-        if (a.fullName < b.fullName) {
-            return -1;
-        }
-        return 0;
+        return Sorting(a.fullName, b.fullName);
     })
     return array;
+}
+function Sorting(elem1, elem2) {
+    if (elem1 > elem2) {
+        return 1;
+    }
+    if (elem1 < elem2) {
+        return -1;
+    }
+    return 0;
 }
 function dateSort(array) {
     
@@ -155,25 +186,14 @@ function dateSort(array) {
         var elem1 = toNumbers(a.startVacation);
         var elem2 = toNumbers(b.startVacation);
 
-        if (elem1[0] > elem2[0]) {
-            return 1;
-        }
-        if (elem1[0] < elem2[0]) {
-            return -1;
-        }
-        if (elem1[1] > elem2[1]) {
-            return 1;
-        }
-        if (elem1[1] < elem2[1]) {
-            return -1;
-        }
-        var newArray = [a, b];
-        var newSort = nameSort(newArray);
-        if (newArray[0] == newSort[0]) { 
-            return -1;
-        }
-        if (newArray[0] != newSort[0]) {
-            return 1;
+        elem1[2] = a.fullName;
+        elem2[2] = b.fullName;
+
+        for (var i = 0; i< elem1.length; i++) {
+            var sort = Sorting(elem1[i], elem2[i]);
+            if (sort != 0) {
+                return sort;
+            }
         }
         return 0;
     })
@@ -187,12 +207,12 @@ function deleteHTML() {
 function addHTML() {
     for (var i=0; i<Workers.length; i++) {
 
-        var color = ColorClass(currentDate, Workers[i].startVacation, Workers[i].EndVacation);
+        var color = ColorClass(currentDate, Workers[i].startVacation, Workers[i].endVacation);
         var WorkerInfo ='<tr>';
         WorkerInfo += '<td>' + Workers[i].fullName + '</td>';
-        WorkerInfo += '<td>' + Workers[i].Qualification + '</td>'
-        WorkerInfo += '<td ' + 'class="' + color + '" >' + Workers[i].startVacation + '</td>'
-        WorkerInfo += '<td ' + 'class="' + color + '" >' + Workers[i].EndVacation + '</td>'
+        WorkerInfo += '<td>' + Workers[i].Qualification + '</td>';
+        WorkerInfo += '<td ' + 'class="' + color + '" >' + Workers[i].startVacation + '</td>';
+        WorkerInfo += '<td ' + 'class="' + color + '" >' + Workers[i].endVacation + '</td>';
         WorkerInfo += '</tr>';
         var insertInfo = $('.calendar tbody').append(WorkerInfo);
     }
@@ -209,6 +229,7 @@ function ChangeStorage() {
     var strWorkers = JSON.stringify(NewStorage);
     localStorage.setItem("key", strWorkers);
 }
+
 function checkName(name) {
     var nameSplit = name.split(' ');
     for (var i=0; i<nameSplit.length; i++) {
@@ -221,19 +242,21 @@ function checkName(name) {
     return nameJoin;
 }
 
-function findId(string) {
-    var id;
+function findWorker(string) {
+    var worker;
+    var number;
     for (var i=0; i<Workers.length; i++) {
         if (Workers[i].fullName == string) {
-            id = Workers[i].id;
+            worker = Workers[i];
+            number = i;
         }
     }
-    var res = id || false;
+    var res = [number , worker] || false;
     return res;
 }
 
 $(document).ready(function () {
-
+    console.log(Workers);
     Workers = dateSort(Workers);
     addHTML();
     reload(1000*3600*12);
@@ -267,18 +290,15 @@ $("body").on("submit",".delete-form", function() {
     var name = (thisForm).children().children('#name').val();
 
     var nameJoin = checkName(name);
-    var isFind = findId(nameJoin);
-    if (isFind) {
-        var number;
-        for (var i=0; i<Workers.length; i++) {
-            if (Workers[i].id == isFind) {
-                number = i;
-            }
-        }
-        var start = toDate(Workers[number].startVacation);
+    var find = findWorker(nameJoin);
+    if (find) { 
+        var number = find[0]; 
+        var worker = find[1]; 
+
+        var start = toDate(worker.startVacation);
         if (start > currentDate) {
-            Workers[number].startVacation = '';
-            Workers[number].EndVacation = '';
+            worker.startVacation = worker.lastVacation[0] || '';
+            worker.endVacation = worker.lastVacation[1] || '';
 
             ChangeStorage();
             window.location.reload();
@@ -300,21 +320,16 @@ $("body").on("submit",".vacation-form", function() {
     startVacation = encodeURIComponent(startVacation);
     endVacation = encodeURIComponent(endVacation);
 
-    var isFind = findId(nameJoin);
-    if (isFind) {
-        var number;
-        var worker;
-        for (var i=0; i<Workers.length; i++) {
-            if (Workers[i].id == isFind) {
-                worker = Workers[i];
-                number = i;
-            }
-        }
+    var find = findWorker(nameJoin);
+    if (find) { /* переписать функцию */
+        var number = find[0]; 
+        var worker = find[1]; 
+
         var startStorageDay;
         var endStorageDay;
         if(worker.startVacation) {
             var startStorageDay = toDate(worker.startVacation); 
-            var endStorageDay = toDate(worker.EndVacation); 
+            var endStorageDay = toDate(worker.endVacation); 
         }
         
         var startFormDay = toDate(startVacation);
@@ -362,7 +377,7 @@ $("body").on("submit",".vacation-form", function() {
                     if((Workers[i].startVacation != "")&&(Workers[i].fullName != worker.fullName)) {
                         
                         var newStartDay = toDate(Workers[i].startVacation);
-                        var newEndDay = toDate(Workers[i].EndVacation);
+                        var newEndDay = toDate(Workers[i].endVacation);
 
                         if ( ((startFormDay >= newStartDay) && (startFormDay < newEndDay)) || 
                             ((endFormDay > newStartDay) && (endFormDay < newEndDay)) ) { 
@@ -383,9 +398,9 @@ $("body").on("submit",".vacation-form", function() {
         var success2 = rewriteStorage2();
 
         if (success1 && success2) {
-            
-            Workers[number].startVacation = startVacation;
-            Workers[number].EndVacation = endVacation;
+
+            worker.startVacation = startVacation;
+            worker.endVacation = endVacation;
 
             ChangeStorage();
             window.location.reload();
