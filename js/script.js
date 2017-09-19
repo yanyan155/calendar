@@ -5,8 +5,8 @@ var storage = [
         Qualification: "front-end developer",
         startVacation: "",
         endVacation:"",
-        summVacationDays:0,
-        addDays: "none",
+        summVacationDays: 0,
+        addDays: "firstSumm",
         lastVacation: []
     },
     {
@@ -16,7 +16,7 @@ var storage = [
         startVacation: "25.06",
         endVacation:"6.07",
         summVacationDays:0,
-        addDays: "none",
+        addDays: "firstSumm",
         lastVacation: []
     },
     {
@@ -26,17 +26,17 @@ var storage = [
         startVacation:"25.06",
         endVacation:"3.07",
         summVacationDays:0,
-        addDays: "none",
+        addDays: "firstSumm",
         lastVacation: []
     },
     {
         id: 4,
         fullName: "Petrov Ivan",
         Qualification: "front-end developer",
-        startVacation:"25.03",
-        endVacation:"5.04",
+        startVacation:"10.09",
+        endVacation:"19.09",
         summVacationDays:0,
-        addDays: "none",
+        addDays: "firstSumm",
         lastVacation: []
     },
     {
@@ -46,7 +46,7 @@ var storage = [
         startVacation:"4.11",
         endVacation:"16.11",
         summVacationDays:0,
-        addDays: "none",
+        addDays: "firstSumm",
         lastVacation: []
     },
     {
@@ -56,7 +56,7 @@ var storage = [
         startVacation: "12.09",
         endVacation:"23.09",
         summVacationDays:0,
-        addDays: "none",
+        addDays: "firstSumm",
         lastVacation: []
     },
     {
@@ -66,7 +66,7 @@ var storage = [
         startVacation: "25.02",
         endVacation:"6.03",
         summVacationDays:0,
-        addDays: "none",
+        addDays: "firstSumm",
         lastVacation: []
     },
     {
@@ -76,8 +76,9 @@ var storage = [
         startVacation:"18.06",
         endVacation:"22.06",
         summVacationDays:0,
-        addDays: "none",
+        addDays: "firstSumm",
         lastVacation: []
+        /* firstSumm, 1 загрузка хранилища. 
         /* none, если отпуск не начался
         not, если отпуск начался и но дни не добавились 
         yes, если отпуск начался и дни отпусков сложились*/
@@ -89,7 +90,7 @@ var storage = [
         startVacation:"22.12",
         endVacation:"26.12",
         summVacationDays:0,
-        addDays: "none",
+        addDays: "firstSumm",
         lastVacation: [] 
     }
 ];
@@ -105,11 +106,17 @@ var currentDate = new Date();
 var ChangeCount = 0;
 
 for (var i = 0; i<Workers.length; i++) {
+
+    var worker = Workers[i];
     var start = toDate(('' + Workers[i].startVacation));
     var end = toDate(('' + Workers[i].endVacation));
-    var days = (end - start)/1000/3600/24;
+    var days = (end - start)/1000/3600/24 + 1;
     if (!Workers[i].lastVacation[0] && (Workers[i].endVacation != "") && currentDate > end) {
         Workers[i].lastVacation = [ Workers[i].startVacation , Workers[i].endVacation];
+        ChangeCount++;
+    }
+    if (Workers[i].addDays === "firstSumm" && (Workers[i].summVacationDays === 0) && (Workers[i].endVacation != "")) {
+        Workers[i].summVacationDays += days; 
         ChangeCount++;
     }
     
@@ -321,7 +328,7 @@ $("body").on("submit",".vacation-form", function() {
     endVacation = encodeURIComponent(endVacation);
 
     var find = findWorker(nameJoin);
-    if (find) { /* переписать функцию */
+    if (find) { 
         var number = find[0]; 
         var worker = find[1]; 
 
@@ -336,7 +343,7 @@ $("body").on("submit",".vacation-form", function() {
         var endFormDay = toDate(endVacation);
         console.log(startFormDay);
         console.log(endFormDay);
-        var days = (endFormDay - startFormDay)/1000/3600/24;
+        var days = (endFormDay - startFormDay)/1000/3600/24 + 1;
 
         function rewriteStorage1() {
             if ((currentDate - startFormDay) > 0) {
@@ -369,24 +376,28 @@ $("body").on("submit",".vacation-form", function() {
             return true;
         }
         function rewriteStorage2() {
-            var notSameVacation = 0;
-            var SameVacation = 1;
+            var notSameVacation = -1;
+            var SameVacation = 0;
             for (var i=0; i<Workers.length; i++) {
                 if ((worker.Qualification == Workers[i].Qualification)) {
                     notSameVacation++;
-                    if((Workers[i].startVacation != "")&&(Workers[i].fullName != worker.fullName)) {
-                        
+                    if((Workers[i].startVacation != "")&&(i != number)) {
+
                         var newStartDay = toDate(Workers[i].startVacation);
                         var newEndDay = toDate(Workers[i].endVacation);
 
-                        if ( ((startFormDay >= newStartDay) && (startFormDay < newEndDay)) || 
-                            ((endFormDay > newStartDay) && (endFormDay < newEndDay)) ) { 
+                        if ( ((startFormDay >= newStartDay) && (startFormDay <= newEndDay)) || 
+                            ((endFormDay >= newStartDay) && (endFormDay <= newEndDay)) ||
+                            ((startFormDay <= newStartDay) && (endFormDay >= newEndDay))) { 
                             SameVacation++;
+                            endFormDay
+                            console.log(i);
+                            console.log(Workers[i]);
                         }
                     }
                 }
             }
-            if((notSameVacation/2) < SameVacation) {
+            if((notSameVacation/2) <= SameVacation) {
                 alert("в отпуске имеют право находиться не более 50% сотрудников одной должности");
                 return false;
             }
@@ -396,7 +407,7 @@ $("body").on("submit",".vacation-form", function() {
         }
         var success1 = rewriteStorage1();
         var success2 = rewriteStorage2();
-
+        console.log([success1, success2]);
         if (success1 && success2) {
 
             worker.startVacation = startVacation;
