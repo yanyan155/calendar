@@ -224,7 +224,7 @@ function serverEditVacation(formdata) {
         alert("нет данного сотрудника, повторите попытку");
     }
 };
-/*function ColorClass(date, start, end) {
+function ColorClass(date, start, end) {
 
     var start = moment(start, "DD.MM.YY");
     var end = moment(end, "DD.MM.YY");
@@ -237,33 +237,80 @@ function serverEditVacation(formdata) {
         return 'blue';
     }
 }
+function Sorting(elem1, elem2) {
+    if (elem1 > elem2) {
+        return 1;
+    }
+    if (elem1 < elem2) {
+        return -1;
+    }
+    return 0;
+}
+function nameSort(data) {
+    data.sort(function(a,b){
+        return Sorting(a.fullName, b.fullName);
+    })
+    return data;
+}
+function dateSort(data) { 
+    data.sort(function(a,b){
+        var elem1 = moment(a.startVacation, "DD.MM.YY");
+        var elem2 = moment(b.startVacation, "DD.MM.YY");
+
+        if(elem1.isSame(elem2) || (!elem1.isValid() && !elem2.isValid())) {
+            return Sorting(a.fullName, b.fullName);
+        }
+        if(elem1.isAfter(elem2) || !elem2.isValid()) {
+            return 1;
+        } else if(elem2.isAfter(elem1) || !elem1.isValid()) {
+            return -1;
+        }
+        return 0;
+        })
+    return data;
+}
 (function( $ ){
 
-  $.fn.addTable = function( Workers ) { 
+  $.fn.addTable = function( data, sortingType ) { 
 
+    if(sortingType === 'name') {
+         data = nameSort(data);
+    }
+    if(sortingType === 'date') {
+         data = dateSort(data);
+    }
+    var calendar = $(".calendar");
+    if (calendar) {
+        calendar.remove();
+    } 
+    var WorkerInfo = "";
+    for (var i=0; i<data.length; i++) {
+
+        var color = ColorClass(currentDate, data[i].startVacation, data[i].endVacation);
+        WorkerInfo +='<tr>';
+        WorkerInfo += '<td>' + data[i].fullName + '</td>';
+        WorkerInfo += '<td>' + data[i].Qualification + '</td>';
+        WorkerInfo += '<td ' + 'class="' + color + '" >' + data[i].startVacation + '</td>';
+        WorkerInfo += '<td ' + 'class="' + color + '" >' + data[i].endVacation + '</td>';
+        WorkerInfo += '</tr>';
+    }
     var table = "<table class=\"calendar\">";
-        table += "<thead>Календарь отпусков</thead>";
         table += "<tbody><tr><td>фамилия имя сотрудника</td>";
         table += "<td>должность</td>";
         table += "<td>дата начала отпуска</td>";
         table += "<td>дата окончания отпуска</td>";
         table += "</tr>" + WorkerInfo +  "</tbody></table>";
 
-    for (var i=0; i<Workers.length; i++) {
-
-        var color = ColorClass(currentDate, Workers[i].startVacation, Workers[i].endVacation);
-        var WorkerInfo ='<tr>';
-        WorkerInfo += '<td>' + Workers[i].fullName + '</td>';
-        WorkerInfo += '<td>' + Workers[i].Qualification + '</td>';
-        WorkerInfo += '<td ' + 'class="' + color + '" >' + Workers[i].startVacation + '</td>';
-        WorkerInfo += '<td ' + 'class="' + color + '" >' + Workers[i].endVacation + '</td>';
-        WorkerInfo += '</tr>';
-    }
-    return table;
-
+    return this.prepend(table);
   };
 })( jQuery );
 
-var table = addTable(Workers);
-$(".date-sort").prepend(table);
-reload(1000*3600*12);*/
+$("body").addTable(Workers, 'date');
+reload(1000*3600*12);
+$(".date-sort").on("click", function(){
+    $("body").addTable(Workers, 'date');
+});
+
+$(".name-sort").on("click", function(){
+    $("body").addTable(Workers, 'name');
+});
