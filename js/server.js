@@ -7,9 +7,6 @@ function reload(time) {
         ChangeStorage();
         window.location.reload();}, time);
 }
-
-reload(1000*3600*12);
-
 function ChangeStorage() {
     var NewStorage = Workers;
     localStorage.clear();
@@ -227,3 +224,46 @@ function serverEditVacation(formdata) {
         alert("нет данного сотрудника, повторите попытку");
     }
 };
+/*function ColorClass(date, start, end) {
+
+    var start = moment(start, "DD.MM.YY");
+    var end = moment(end, "DD.MM.YY");
+    if (date.isAfter(end) || !end.isValid()) {
+        return 'yellow';
+    }
+    else if(start.isAfter(date)) {
+        return 'green';
+    } else {
+        return 'blue';
+    }
+}
+(function( $ ){
+
+  $.fn.addTable = function( Workers ) { 
+
+    var table = "<table class=\"calendar\">";
+        table += "<thead>Календарь отпусков</thead>";
+        table += "<tbody><tr><td>фамилия имя сотрудника</td>";
+        table += "<td>должность</td>";
+        table += "<td>дата начала отпуска</td>";
+        table += "<td>дата окончания отпуска</td>";
+        table += "</tr>" + WorkerInfo +  "</tbody></table>";
+
+    for (var i=0; i<Workers.length; i++) {
+
+        var color = ColorClass(currentDate, Workers[i].startVacation, Workers[i].endVacation);
+        var WorkerInfo ='<tr>';
+        WorkerInfo += '<td>' + Workers[i].fullName + '</td>';
+        WorkerInfo += '<td>' + Workers[i].Qualification + '</td>';
+        WorkerInfo += '<td ' + 'class="' + color + '" >' + Workers[i].startVacation + '</td>';
+        WorkerInfo += '<td ' + 'class="' + color + '" >' + Workers[i].endVacation + '</td>';
+        WorkerInfo += '</tr>';
+    }
+    return table;
+
+  };
+})( jQuery );
+
+var table = addTable(Workers);
+$(".date-sort").prepend(table);
+reload(1000*3600*12);*/
