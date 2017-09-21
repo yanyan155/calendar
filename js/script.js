@@ -1,177 +1,11 @@
-var storage = [
-    {
-        id: 1,
-        fullName: "Sidorov Vlad",
-        Qualification: "front-end developer",
-        startVacation: "",
-        endVacation:"",
-        summVacationDays: 0,
-        addDays: "firstSumm",
-        lastVacation: []
-    },
-    {
-        id: 2,
-        fullName: "Kozlov Vlad",
-        Qualification: "designer",
-        startVacation: "25.06.17",
-        endVacation:"6.07.17",
-        summVacationDays:0,
-        addDays: "firstSumm",
-        lastVacation: []
-    },
-    {
-        id: 3,
-        fullName: "Ivanov Ivan",
-        Qualification: "front-end developer",
-        startVacation:"25.06.17",
-        endVacation:"3.07.17",
-        summVacationDays:0,
-        addDays: "firstSumm",
-        lastVacation: []
-    },
-    {
-        id: 4,
-        fullName: "Petrov Ivan",
-        Qualification: "front-end developer",
-        startVacation:"10.09.17",
-        endVacation:"19.09.17",
-        summVacationDays:0,
-        addDays: "firstSumm",
-        lastVacation: []
-    },
-    {
-        id: 5,
-        fullName: "Kositsin Ivan",
-        Qualification: "back-end developer",
-        startVacation:"4.11.17",
-        endVacation:"16.11.17",
-        summVacationDays:0,
-        addDays: "firstSumm",
-        lastVacation: []
-    },
-    {
-        id: 6,
-        fullName: "Moikin Ivan",
-        Qualification: "back-end developer",
-        startVacation: "12.09.17",
-        endVacation:"23.09.17",
-        summVacationDays:0,
-        addDays: "firstSumm",
-        lastVacation: []
-    },
-    {
-        id: 7,
-        fullName: "Moikin Dmitry",
-        Qualification: "designer",
-        startVacation: "25.02.17",
-        endVacation:"6.03.17",
-        summVacationDays:0,
-        addDays: "firstSumm",
-        lastVacation: []
-    },
-    {
-        id: 8,
-        fullName: "Moikina Irina",
-        Qualification: "designer",
-        startVacation:"18.06.17",
-        endVacation:"22.06.17",
-        summVacationDays:0,
-        addDays: "firstSumm",
-        lastVacation: []
-        /* firstSumm, 1 загрузка хранилища. 
-        /* none, если отпуск не начался
-        not, если отпуск начался и но дни не добавились 
-        yes, если отпуск начался и дни отпусков сложились*/
-    },
-    {
-        id: 9,
-        fullName: "Okala-Kulak Vladimir",
-        Qualification: "back-end developer",
-        startVacation:"22.12.17",
-        endVacation:"26.12.17",
-        summVacationDays:0,
-        addDays: "firstSumm",
-        lastVacation: [] 
-    }
-];
-
-if( !(localStorage.getItem("key"))) {
-    var strWorkers = JSON.stringify(storage);
-    localStorage.setItem("key", strWorkers);
-}
-//localStorage.clear();
-var Workers = JSON.parse(localStorage.getItem("key"));
-/*var currentDate = new Date();*/
-var currentDate = moment();
-console.log(currentDate);
-var ChangeCount = 0;
-
-for (var i = 0; i<Workers.length; i++) {
-
-    var worker = Workers[i];
-    var start = moment(worker.startVacation, "DD.MM.YY");
-    var end = moment(worker.endVacation, "DD.MM.YY");
-    var days = end.diff(start, "days") + 1;
-    //console.log(end.isValid());
-    /*var start = toDate(('' + worker.startVacation));
-    var end = toDate(('' + worker.endVacation));*/
-    //var days = (end - start)/1000/3600/24 + 1;
-    /*if (!worker.lastVacation[0] && (worker.endVacation != "") && currentDate > end) { */
-        /*console.log(currentDate.isAfter(end))
-        console.log(worker.fullName);*/
-    if (!worker.lastVacation[0] && start.isValid() && (currentDate.isAfter(end))) {
-        worker.lastVacation = [ worker.startVacation , worker.endVacation];
-        ChangeCount++;
-    }
-    if (worker.addDays === "firstSumm" && (worker.summVacationDays === 0) && end.isValid()/*(worker.endVacation != "")*/) {
-        worker.summVacationDays += days; 
-        ChangeCount++;
-    }
-    
-    if (worker.summVacationDays > 24) { /* проверить summvacationDAys, НЕ ЗАБЫТЬ УБРАТЬ */
-        alert("ЗАМЕС!");
-    }
-    if /*(((currentDate - start) > 0) && ((end - currentDate)>0) && (worker.addDays == "none"))*/
-    (currentDate.isAfter(start) && end.isAfter(currentDate) && (worker.addDays == "none")) {
-        worker.addDays = "not";
-    }
-    if /*(((currentDate - start) > 0) && ((end - currentDate)>0) && (worker.addDays == "not"))*/ 
-        (currentDate.isAfter(start) && end.isAfter(currentDate) && (worker.addDays == "not")) {
-        worker.summVacationDays += days;
-        worker.addDays = "yes"; 
-        ChangeCount++;
-    }
-    if (currentDate > end) {
-        worker.addDays = "none";
-    }
-}
-if (ChangeCount > 0) {
-    ChangeCount = 0;
-    ChangeStorage();
-    window.location.reload();
-}
-//console.log(Workers);
-
-function toDate(date) {
-    
-    var dot = date.indexOf(".");
-    var thisdate = +date.substring(0, dot);
-    var thismonth= +date.substring(dot+1) -1;
-    var resDate = new Date(currentDate.getFullYear(), thismonth, thisdate);
-    return resDate;
-}
 
 function ColorClass(date, start, end) {
 
-    //var start = toDate(startVacation);
-    //var end = toDate(endVacation);
     var start = moment(start, "DD.MM.YY");
     var end = moment(end, "DD.MM.YY");
-    //if(date - end > 0) {
     if (date.isAfter(end) || !end.isValid()) {
         return 'yellow';
     }
-    //else if(start - date > 0) {
     else if(start.isAfter(date)) {
         return 'green';
     } else {
@@ -197,24 +31,6 @@ function Sorting(elem1, elem2) {
 function dateSort(array) {
     
     array.sort(function(a,b){
-        //function toNumbers (string) {
-        //    var dot = string.indexOf(".");
-        //    var thisdate = +string.substring(0, dot);
-        //    var thismonth= +string.substring(dot+1) -1;
-        //    return [thismonth, thisdate];
-        //}
-        //var elem1 = toNumbers(a.startVacation);
-        //var elem2 = toNumbers(b.startVacation);
-
-        //elem1[2] = a.fullName;
-        //elem2[2] = b.fullName;
-
-        //for (var i = 0; i< elem1.length; i++) {
-        //    var sort = Sorting(elem1[i], elem2[i]);
-        //    if (sort != 0) {
-        //        return sort;
-        //    }
-        //}
         if(a.startVacation) {
 
         }
@@ -251,53 +67,12 @@ function addHTML() {
         var insertInfo = $('.calendar tbody').append(WorkerInfo);
     }
 }
-function reload(time) { /*нужно переделать*/
-    setTimeout(function() {
-
-        ChangeStorage();
-        window.location.reload();}, time);
-}
-function ChangeStorage() {
-    var NewStorage = Workers;
-    localStorage.clear();
-    var strWorkers = JSON.stringify(NewStorage);
-    localStorage.setItem("key", strWorkers);
-}
-
-function checkName(name) {
-    var nameSplit = name.split(' ');
-    for (var i=0; i<nameSplit.length; i++) {
-        nameSplit[i] = encodeURIComponent(nameSplit[i]);
-    }
-    var nameJoin = nameSplit[0];
-    for(var i=1; i<nameSplit.length; i++) {
-        nameJoin += " " + nameSplit[i];
-    }
-    return nameJoin;
-}
-
-function findWorker(string) {
-    var find = false;
-    var worker;
-    var number;
-    for (var i=0; i<Workers.length; i++) {
-        if (Workers[i].fullName == string) {
-            worker = Workers[i];
-            number = i;
-            find = true;
-        }
-    }
-    if (find) {
-        return [number , worker];
-    }
-    return false;
-}
 
 $(document).ready(function () {
-    //console.log(Workers);
+
     Workers = dateSort(Workers);
     addHTML();
-    reload(1000*3600*12); /*нужно переписать для даты, добавляем count, когда data меняет день */
+    reload(1000*3600*12); 
     
 });
 
@@ -331,28 +106,9 @@ $(".close-button").on("click", function(){
 $("body").on("submit",".delete-form", function() {
     var thisForm = $(this);
     var name = (thisForm).children().children('#name').val();
+    var formdata = {name: name}
+    var result = serverDeleteVacation(formdata);
 
-    var nameJoin = checkName(name);
-    var find = findWorker(nameJoin);
-    console.log(find);
-    if (find) { 
-        var number = find[0]; 
-        var worker = find[1]; 
-
-        //var start = toDate(worker.startVacation);
-        //if (start > currentDate) {
-        var start = moment(worker.startVacation, "DD.MM.YY");
-        if (start.isAfter(currentDate)) {
-            worker.startVacation = worker.lastVacation[0] || '';
-            worker.endVacation = worker.lastVacation[1] || '';
-
-            ChangeStorage();
-            window.location.reload();
-        } else {
-            alert("можно удалить только будущий отпуск");
-        }
-    }
-    alert("нет данного сотрудника, повторите попытку");
     return false;
 });
 
@@ -362,9 +118,14 @@ $("body").on("submit",".vacation-form", function() {
     var name = (thisForm).children().children('#name').val();
     var startVacation = (thisForm).children().children('#start-vacation').val();
     var endVacation = (thisForm).children().children('#end-vacation').val();
-    var nameJoin = checkName(name);
     
-    function dateCheck (start, end) {
+    var formdata = {
+        name: name,
+        startVacation: startVacation,
+        endVacation: endVacation };
+    var result = serverEditVacation(formdata);
+    
+    /*function dateCheck (start, end) {
         var start = moment(start, "DD.MM.YY");
         var end = moment(end, "DD.MM.YY");
         if (start.isValid() && end.isValid()) {
@@ -372,13 +133,13 @@ $("body").on("submit",".vacation-form", function() {
         }
         return false;
     }
+    var nameJoin = checkName(name);
     var dateCheck = dateCheck(startVacation, endVacation);
-    if (!dateCheck) { // проверить, правильно ли работает
+    if (!dateCheck) { 
         alert("данные не верны")
         return false;
     }
-    //startVacation = encodeURIComponent(startVacation);
-    //endVacation = encodeURIComponent(endVacation);
+
 
     var find = findWorker(nameJoin);
     if (find) { 
@@ -388,23 +149,18 @@ $("body").on("submit",".vacation-form", function() {
         var startStorageDay;
         var endStorageDay;
         if(worker.startVacation) {
-            //var startStorageDay = toDate(worker.startVacation); 
-            //var endStorageDay = toDate(worker.endVacation); 
+
             var startStorageDay = moment(worker.startVacation, "DD.MM.YY"); 
             var endStorageDay = moment(worker.endVacation, "DD.MM.YY");
         }
         
-        //var startFormDay = toDate(startVacation);
-        //var endFormDay = toDate(endVacation);
         var startFormDay = moment(startVacation, "DD.MM.YY")
         var endFormDay = moment(endVacation, "DD.MM.YY");
-        console.log(startFormDay);
-        console.log(endFormDay);
-        //var days = (endFormDay - startFormDay)/1000/3600/24 + 1;
+
         var days = end.diff(start, "days") + 1;
 
         function rewriteStorage1() {
-            //if ((currentDate - startFormDay) > 0) {
+
             if (currentDate.isAfter(startFormDay)) {
                 alert("вы не можете ставить отпуск в прошлом!");
                 return false;
@@ -422,12 +178,10 @@ $("body").on("submit",".vacation-form", function() {
                 return false;
             }
             if (worker.startVacation) {
-                //if(((currentDate - endStorageDay) < 0) && ((currentDate - startStorageDay)>0)) { 
                 if(endStorageDay.isAfter(currentDate) && currentDate.isAfter(startStorageDay)) { 
                     alert("вы не можете ставить новый отпуск во время существующего");
                     return false;
                 }
-                //if(((endStorageDay - startStorageDay)>(startFormDay - endStorageDay))&& ((currentDate - endStorageDay) > 0)) { 
                 if(((endStorageDay.diff(startStorageDay, "days") - startFormDay.diff(endStorageDay, "days"))>0)&& (currentDate.isAfter(endStorageDay))) { 
                     alert("минимальный период между периодами отпуска равен размеру первого отпуска");
                     return false;
@@ -448,18 +202,10 @@ $("body").on("submit",".vacation-form", function() {
                         var newEndDay = toDate(Workers[i].endVacation);
                         var startFormDay = toDate(worker.startVacation);
                         var endFormDay = toDate(worker.endVacation);
-                        /*var newStartDay = moment(Workers[i].startVacation, "DD.MM.YY");
-                        var newEndDay = moment(Workers[i].endVacation, "DD.MM.YY");*/
 
                         if ( ((startFormDay >= newStartDay) && (startFormDay <= newEndDay)) || 
                             ((endFormDay >= newStartDay) && (endFormDay <= newEndDay)) ||
                             ((startFormDay <= newStartDay) && (endFormDay >= newEndDay))) { 
-                        /*if ( ((startFormDay.isAfter(newStartDay) || startFormDay.isSame(newStartDay)) &&
-                            (startFormDay.isBefore(newEndDay) || startFormDay.isSame(newEndDay))) ||   
-                            ((endFormDay.isAfter(newStartDay) || endFormDay.isSame(newStartDay)) && // 2
-                            (endFormDay.isBefore(newEndDay) || endFormDay.isSame(newEndDay))) ||   
-                            ((startFormDay.isBefore(newStartDay) || startFormDay.isSame(newStartDay)) &&  // 3
-                            (endFormDay.isAfter(newEndDay) || endFormDay.isSame(newEndDay))) ) {*/
 
                             SameVacation++;
                         }
@@ -476,7 +222,6 @@ $("body").on("submit",".vacation-form", function() {
         }
         var success1 = rewriteStorage1();
         var success2 = rewriteStorage2();
-        //console.log([success1, success2]);
         if (success1 && success2) {
 
             worker.startVacation = startVacation;
@@ -487,6 +232,6 @@ $("body").on("submit",".vacation-form", function() {
         }      
     } else {
         alert("нет данного сотрудника, повторите попытку");
-    }
+    }*/
     return false;
 });
