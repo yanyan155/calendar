@@ -150,7 +150,7 @@ if (ChangeCount > 0) {
     ChangeStorage();
     window.location.reload();
 }
-console.log(Workers);
+//console.log(Workers);
 
 function toDate(date) {
     
@@ -277,16 +277,20 @@ function checkName(name) {
 }
 
 function findWorker(string) {
+    var find = false;
     var worker;
     var number;
     for (var i=0; i<Workers.length; i++) {
         if (Workers[i].fullName == string) {
             worker = Workers[i];
             number = i;
+            find = true;
         }
     }
-    var res = [number , worker] || false;
-    return res;
+    if (find) {
+        return [number , worker];
+    }
+    return false;
 }
 
 $(document).ready(function () {
@@ -310,13 +314,18 @@ $(".name-sort").on("click", function(){
 });
 
 $(".edit-vacation").on("click", function(){
-    $(".vacation-form" ).toggle();
-    //$(".delete-form").hide();
+    $(".modal" ).show();
+    $(".vacation-form" ).show();
 });
 
 $(".delete-vacation").on("click", function(){
-    $(".delete-form").toggle();
-    //$(".vacation-form").hide();
+    $(".modal" ).show();
+    $(".delete-form").show();
+});
+$(".close-button").on("click", function(){
+    $(".modal" ).hide();
+    $(".delete-form").hide();
+    $(".vacation-form").hide();
 });
 
 $("body").on("submit",".delete-form", function() {
@@ -325,6 +334,7 @@ $("body").on("submit",".delete-form", function() {
 
     var nameJoin = checkName(name);
     var find = findWorker(nameJoin);
+    console.log(find);
     if (find) { 
         var number = find[0]; 
         var worker = find[1]; 
@@ -342,6 +352,7 @@ $("body").on("submit",".delete-form", function() {
             alert("можно удалить только будущий отпуск");
         }
     }
+    alert("нет данного сотрудника, повторите попытку");
     return false;
 });
 
